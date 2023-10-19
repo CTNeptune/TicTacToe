@@ -7,8 +7,8 @@ using TMPro;
 public class UIMainMenuHandler : UIHandler, IUIHandler
 {
     public GameObject _TitleObj;
-    public List<BoardSizeButtons> _SizeBtns;
-    private int mCurrentSize = -1;
+    public TMP_Dropdown _SizeDropdown;
+    public List<Vector2Int> _BoardSizeOptions;
 
     public TMP_InputField _InputField;
     public Button _StartBtn;
@@ -22,11 +22,14 @@ public class UIMainMenuHandler : UIHandler, IUIHandler
 
     private void Start()
     {
-        for (int i = 0; i < _SizeBtns.Count; i++)
-        {
-            int index = i;
-            _SizeBtns[i]._Button.onClick.AddListener(() => OnClickSizeButton(_SizeBtns[index]._Button, index));
-        }
+        List<string> optionStrings = new List<string>();
+
+        foreach (var option in _BoardSizeOptions)
+            optionStrings.Add(option.x + "x" + option.y);
+
+        _SizeDropdown.ClearOptions();
+        _SizeDropdown.AddOptions(optionStrings);
+        _SizeDropdown.onValueChanged.AddListener(delegate { OnClickSizeButton(_SizeDropdown.value); });
 
         SetListeners(true);
         _StartBtn.interactable = false;
@@ -51,21 +54,28 @@ public class UIMainMenuHandler : UIHandler, IUIHandler
         TrySetStartBtnActive();
     }
 
-    private void OnClickSizeButton(Button inButton, int i)
+    private void OnClickSizeButton(int inDropdownValue)
     {
-        inButton.Select();
-        mCurrentSize = i;
         TrySetStartBtnActive();
     }
 
     private void TrySetStartBtnActive()
     {
-        _StartBtn.interactable = !string.IsNullOrEmpty(_InputField.text) && mCurrentSize >= 0;
+        _StartBtn.interactable = !string.IsNullOrEmpty(_InputField.text);
     }
 
     private void OnClickStartGame()
     {
-        mGameManager?.InitializeGame(_SizeBtns[mCurrentSize]._Size, _SizeBtns[mCurrentSize]._Size);
+        try
+        {
+            mGameManager?.InitializeGame(_BoardSizeOptions[_SizeDropdown.value].x, _BoardSizeOptions[_SizeDropdown.value].y);
+        }
+        catch(Exception e)
+        {
+            Debug.LogError(e);
+            return;
+        }
+
         Hide();
     }
 
@@ -83,19 +93,6 @@ public class UIMainMenuHandler : UIHandler, IUIHandler
 
     private void Toggle(bool inToggle)
     {
-        _TitleObj.SetActive(inToggle);
-
-        for (int i = 0; i < _SizeBtns.Count; i++)
-            _SizeBtns[i]._Button.gameObject.SetActive(inToggle);
-
-        _InputField.transform.parent.gameObject.SetActive(inToggle);
-        _StartBtn.gameObject.SetActive(inToggle);
+        gameObject.SetActive(inToggle);
     }
-}
-
-[Serializable]
-public class BoardSizeButtons
-{
-    public Button _Button;
-    public int _Size; //Will have the same width and height, but we can add a custom width and height later if we want to
 }
