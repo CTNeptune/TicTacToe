@@ -25,17 +25,33 @@ public class TicTacToeGameManager : MonoBehaviour
 
     public void InitializeGame(int boardWidth, int boardHeight)
     {
-        pBoard.OnValidMove -= OnValidMove;
-        pBoard.OnInvalidMove -= OnInvalidMove;
-        pBoard.OnGameWon -= OnGameWon;
+        SetDelegates(false);
 
         pBoard.Initialize(boardWidth, boardHeight);
 
-        pBoard.OnValidMove += OnValidMove;
-        pBoard.OnInvalidMove += OnInvalidMove;
-        pBoard.OnGameWon += OnGameWon;
+        SetDelegates(true);
 
         pBoard.SetCurrentPlayer(_Players[0]);
+        pBoard.SetBoardActive(true);
+        pBoard.ToggleBoardGrid(true);
+    }
+
+    private void SetDelegates(bool Add)
+    {
+        if (Add)
+        {
+            pBoard.OnValidMove += OnValidMove;
+            pBoard.OnInvalidMove += OnInvalidMove;
+            pBoard.OnGameWon += OnGameWon;
+            pBoard.OnGameDraw += OnGameDraw;
+        }
+        else
+        {
+            pBoard.OnValidMove -= OnValidMove;
+            pBoard.OnInvalidMove -= OnInvalidMove;
+            pBoard.OnGameWon -= OnGameWon;
+            pBoard.OnGameDraw -= OnGameDraw;
+        }
     }
 
     private void OnValidMove(Move inMove)
@@ -58,10 +74,26 @@ public class TicTacToeGameManager : MonoBehaviour
         Debug.Log(inMove.Player._Name + " has attempted an invalid move at " + inMove.MarkerX + " " + inMove.MarkerY);
     }
 
-    private void OnGameWon(Move lastMove)
+    private void OnGameWon(Move winningMove)
     {
-        pBoard.OnGameWon -= OnGameWon;
-        Debug.Log(lastMove.Player._Name + " won!");
+        SetDelegates(false);
+        pBoard.SetBoardActive(false);
+        UIManager.pInstance.ShowPostGameMenu(winningMove);
+        Debug.Log(winningMove.Player._Name + " won!");
+    }
+
+    private void OnGameDraw(Move inMove)
+    {
+        SetDelegates(false);
+        pBoard.SetBoardActive(false);
+        UIManager.pInstance.ShowPostGameMenu(inMove, true);
+        Debug.Log("Draw!");
+    }
+
+    public void ResetGameState()
+    {
+        pBoard.ResetBoard();
+        pBoard.ToggleBoardGrid(false);
     }
 }
 

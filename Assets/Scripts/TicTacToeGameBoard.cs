@@ -16,10 +16,13 @@ public class TicTacToeGameBoard : MonoBehaviour, IMoveHandler
     public Action<Move> OnGameWon;
     public Action<Move> OnValidMove;
     public Action<Move> OnInvalidMove;
+    public Action<Move> OnGameDraw;
 
     private Player pCurrentPlayer;
 
     private List<UIGridButton> mGridButtonPool = new List<UIGridButton>();
+
+    private bool mBoardActive;
 
     public void Initialize(int width, int height)
     {
@@ -28,6 +31,11 @@ public class TicTacToeGameBoard : MonoBehaviour, IMoveHandler
         pBoardHeight = height;
         pBoardState = new List<Move>();
         PopulateGrid();
+    }
+
+    public void SetBoardActive(bool inSetActive)
+    {
+        mBoardActive = inSetActive;
     }
 
     private void PopulateGrid()
@@ -65,6 +73,16 @@ public class TicTacToeGameBoard : MonoBehaviour, IMoveHandler
         pCurrentPlayer = inPlayer;
     }
 
+    public void ResetBoard()
+    {
+        Initialize(pBoardWidth, pBoardHeight);
+    }
+
+    public void ToggleBoardGrid(bool inToggle)
+    {
+        _GridLayout.gameObject.SetActive(inToggle);
+    }
+
     public bool IsEmptyCell(int inX, int inY)
     {
         return pBoardState.Find(t => t.MarkerX == inX && t.MarkerY == inY) == null;
@@ -91,6 +109,9 @@ public class TicTacToeGameBoard : MonoBehaviour, IMoveHandler
 
     public void OnGridButtonClicked(UIGridButton inGridBtn)
     {
+        if (!mBoardActive)
+            return;
+
         Vector2Int gridBtnPos = inGridBtn.GetGridPosition();
         Move newMove = new Move(gridBtnPos.x, gridBtnPos.y, pCurrentPlayer);
         PlaceMarker(newMove);
@@ -106,7 +127,11 @@ public class TicTacToeGameBoard : MonoBehaviour, IMoveHandler
 
         pBoardState.Add(inMove);
         UpdateGridBtnSymbol(pCurrentPlayer, inMove.MarkerX, inMove.MarkerY);
-        CheckWin(inMove);
+        
+        if (CheckWin(inMove) || CheckDraw(inMove))
+            return;
+
+        OnValidMove?.Invoke(inMove);
     }
 
     private void UpdateGridBtnSymbol(Player pCurrentPlayer, int markerX, int markerY)
@@ -125,9 +150,7 @@ public class TicTacToeGameBoard : MonoBehaviour, IMoveHandler
         bool gameWon = HorizontalWin(playerMoves) || VerticalWin(playerMoves) || DiagonalWin(playerMoves);
 
         if (gameWon)
-            OnGameWon.Invoke(inLastMove);
-        else
-            OnValidMove(inLastMove);
+            OnGameWon?.Invoke(inLastMove);
 
         return gameWon;
     }
@@ -178,5 +201,14 @@ public class TicTacToeGameBoard : MonoBehaviour, IMoveHandler
         }
 
         return false;
+    }
+
+    private bool CheckDraw(Move inLastMove)
+    {
+        if (pBoardState.Count != pBoardWidth * pBoardHeight)
+            return false;
+
+        OnGameDraw?.Invoke(inLastMove);
+        return true;
     }
 }

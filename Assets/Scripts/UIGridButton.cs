@@ -33,6 +33,7 @@ public class UIGridButton : MonoBehaviour
         mGridRow = inGridRow;
         mGridColumn = inGridColumn;
         mMoveHandler = inMoveHandler;
+        m_SymbolTextField.text = string.Empty;
         gameObject.SetActive(true);
     }
 

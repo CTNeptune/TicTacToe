@@ -49,6 +49,7 @@ public class UIManager : MonoBehaviour
 
     public void ShowMainMenu()
     {
+        mTicTacToeGameManager.ResetGameState();
         HideAllUI();
         (_UIHandlers.Find(t => t is UIMainMenuHandler) as UIMainMenuHandler)?.Show();
     }
@@ -58,9 +59,21 @@ public class UIManager : MonoBehaviour
         HideAllUI();
     }
 
-    public void ShowPauseMenu()
+    public void ShowPostGameMenu(Move winningMove, bool isDraw = false)
     {
         HideAllUI();
+        
+        UIPostGameMenuHandler postGameMenuHandler = (_UIHandlers.Find(t => t is UIPostGameMenuHandler) as UIPostGameMenuHandler);
+        
+        if (postGameMenuHandler == null)
+            return;
+
+        if (isDraw)
+            postGameMenuHandler.SetGameDrawText();
+        else
+            postGameMenuHandler.SetPlayerWinnerName(winningMove.Player._Name);
+        
+        postGameMenuHandler.Show();
     }
 
     public void HideAllUI()
