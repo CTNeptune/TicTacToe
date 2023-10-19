@@ -2,10 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TicTacToeGameBoard : MonoBehaviour, IMoveHandler
 {
     public UIGridButton _UIGridButtonTemplate;
+    public GridLayoutGroup _GridLayout;
     private List<Move> pBoardState;
 
     private int pBoardWidth;
@@ -21,6 +23,7 @@ public class TicTacToeGameBoard : MonoBehaviour, IMoveHandler
 
     public void Initialize(int width, int height)
     {
+        _GridLayout.constraintCount = width;
         pBoardWidth = width;
         pBoardHeight = height;
         pBoardState = new List<Move>();

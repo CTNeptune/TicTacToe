@@ -879,6 +879,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _UIGridButtonTemplate: {fileID: 1627152936}
+  _GridLayout: {fileID: 411687432}
 --- !u!1 &599525878
 GameObject:
   m_ObjectHideFlags: 0
