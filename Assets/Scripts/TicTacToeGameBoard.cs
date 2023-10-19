@@ -70,6 +70,25 @@ public class TicTacToeGameBoard : MonoBehaviour, IMoveHandler
         return pBoardState.Find(t => t.MarkerX == inX && t.MarkerY == inY) == null;
     }
 
+    public Move CreateRandomMove()
+    {
+        List<Move> potentialMoves = new List<Move>();
+
+        for (int i = 0; i < pBoardWidth; i++)
+        {
+            for (int j = 0; j < pBoardHeight; j++)
+            {
+                if (IsEmptyCell(i, j))
+                    potentialMoves.Add(new Move(i, j, null));
+            }
+        }
+
+        if (potentialMoves.Count == 0)
+            return null;
+
+        return potentialMoves[UnityEngine.Random.Range(0, potentialMoves.Count - 1)];
+    }
+
     public void OnGridButtonClicked(UIGridButton inGridBtn)
     {
         Vector2Int gridBtnPos = inGridBtn.GetGridPosition();

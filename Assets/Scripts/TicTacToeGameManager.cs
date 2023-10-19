@@ -46,8 +46,11 @@ public class TicTacToeGameManager : MonoBehaviour
 
         if (mCurrentPlayerTurn > _Players.Count - 1)
             mCurrentPlayerTurn = 0;
-        
+
         pBoard.SetCurrentPlayer(_Players[mCurrentPlayerTurn]);
+        
+        if(_Players[mCurrentPlayerTurn]._IsAI)
+            _Players[mCurrentPlayerTurn].AutoPerformMove(pBoard);
     }
 
     private void OnInvalidMove(Move inMove)
@@ -68,6 +71,13 @@ public class Player
     public string _Name;
     public bool _IsAI;
     public string _Symbol;
+
+    public void AutoPerformMove(TicTacToeGameBoard inBoard)
+    {
+        Move randomMove = inBoard.CreateRandomMove();
+        Move newMove = new Move(randomMove.MarkerX, randomMove.MarkerY, this);
+        inBoard.PlaceMarker(newMove);
+    }
 }
 
 public class Move
