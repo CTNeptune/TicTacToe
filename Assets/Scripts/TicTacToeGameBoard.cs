@@ -56,7 +56,6 @@ public class TicTacToeGameBoard : MonoBehaviour, IMoveHandler
                 newButton.Initialize(gridRow, gridColumn, this);
                 mGridButtonPool.Add(newButton);
             }
-            return;
         }
 
         for (int i = 0; i < requiredGridButtons; i++)
