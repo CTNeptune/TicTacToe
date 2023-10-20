@@ -1,2 +1,2 @@
 # TicTacToe
- A code test
+ A Unity3D implementation of Tic-Tac-Toe following SOLID principles.
