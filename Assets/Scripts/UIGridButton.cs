@@ -51,4 +51,9 @@ public class UIGridButton : MonoBehaviour
     {
         m_SymbolTextField.text = inSymbol;
     }
+
+    private void OnDisable()
+    {
+        m_Button.onClick.RemoveAllListeners();
+    }
 }

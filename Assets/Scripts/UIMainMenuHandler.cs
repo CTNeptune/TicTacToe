@@ -50,7 +50,7 @@ public class UIMainMenuHandler : UIHandler, IUIHandler
 
     private void OnNameChanged(string text)
     {
-        mGameManager._Players[0]._Name = text;
+        mGameManager.GetPlayers()[0]._Name = text;
         TrySetStartBtnActive();
     }
 

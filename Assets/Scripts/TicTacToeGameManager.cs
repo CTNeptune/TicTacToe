@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class TicTacToeGameManager : MonoBehaviour
 {
-    public List<Player> _Players = new List<Player>();
+    [SerializeField] private List<Player> m_Players = new List<Player>();
     private int mCurrentPlayerTurn;
 
     public TicTacToeGameBoard pBoard;
@@ -13,6 +13,11 @@ public class TicTacToeGameManager : MonoBehaviour
     private void Start()
     {
         StartCoroutine(WaitForUIManager());
+    }
+
+    public List<Player> GetPlayers()
+    {
+        return m_Players;
     }
 
     private IEnumerator WaitForUIManager()
@@ -31,7 +36,8 @@ public class TicTacToeGameManager : MonoBehaviour
 
         SetDelegates(true);
 
-        pBoard.SetCurrentPlayer(_Players[0]);
+        mCurrentPlayerTurn = 0;
+        pBoard.SetCurrentPlayer(m_Players[mCurrentPlayerTurn]);
         pBoard.SetBoardActive(true);
         pBoard.ToggleBoardGrid(true);
     }
@@ -60,13 +66,13 @@ public class TicTacToeGameManager : MonoBehaviour
         
         mCurrentPlayerTurn++;
 
-        if (mCurrentPlayerTurn > _Players.Count - 1)
+        if (mCurrentPlayerTurn > m_Players.Count - 1)
             mCurrentPlayerTurn = 0;
 
-        pBoard.SetCurrentPlayer(_Players[mCurrentPlayerTurn]);
+        pBoard.SetCurrentPlayer(m_Players[mCurrentPlayerTurn]);
         
-        if(_Players[mCurrentPlayerTurn]._IsAI)
-            _Players[mCurrentPlayerTurn].AutoPerformMove(pBoard);
+        if(m_Players[mCurrentPlayerTurn]._IsAI)
+            m_Players[mCurrentPlayerTurn].AutoPerformMove(pBoard);
     }
 
     private void OnInvalidMove(Move inMove)

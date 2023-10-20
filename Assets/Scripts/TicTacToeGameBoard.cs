@@ -6,8 +6,8 @@ using UnityEngine.UI;
 
 public class TicTacToeGameBoard : MonoBehaviour, IMoveHandler
 {
-    public UIGridButton _UIGridButtonTemplate;
-    public GridLayoutGroup _GridLayout;
+    [SerializeField] private UIGridButton m_UIGridButtonTemplate;
+    [SerializeField] private GridLayoutGroup m_GridLayout;
     private List<Move> pBoardState;
 
     private int pBoardWidth;
@@ -26,7 +26,7 @@ public class TicTacToeGameBoard : MonoBehaviour, IMoveHandler
 
     public void Initialize(int width, int height)
     {
-        _GridLayout.constraintCount = width;
+        m_GridLayout.constraintCount = width;
         pBoardWidth = width;
         pBoardHeight = height;
         pBoardState = new List<Move>();
@@ -52,7 +52,7 @@ public class TicTacToeGameBoard : MonoBehaviour, IMoveHandler
             {
                 int gridRow = i / pBoardWidth;
                 int gridColumn = i % pBoardWidth;
-                UIGridButton newButton = Instantiate(_UIGridButtonTemplate, _UIGridButtonTemplate.transform.parent);
+                UIGridButton newButton = Instantiate(m_UIGridButtonTemplate, m_UIGridButtonTemplate.transform.parent);
                 newButton.Initialize(gridRow, gridColumn, this);
                 mGridButtonPool.Add(newButton);
             }
@@ -79,7 +79,7 @@ public class TicTacToeGameBoard : MonoBehaviour, IMoveHandler
 
     public void ToggleBoardGrid(bool inToggle)
     {
-        _GridLayout.gameObject.SetActive(inToggle);
+        m_GridLayout.gameObject.SetActive(inToggle);
     }
 
     public bool IsEmptyCell(int inX, int inY)
@@ -118,7 +118,7 @@ public class TicTacToeGameBoard : MonoBehaviour, IMoveHandler
 
     public void PlaceMarker(Move inMove)
     {
-        if (!IsEmptyCell(inMove.MarkerX, inMove.MarkerY) || inMove.MarkerX < 0 || inMove.MarkerX > pBoardWidth || inMove.MarkerY < 0 || inMove.MarkerY > pBoardHeight)
+        if (!IsValidMove(inMove))
         {
             OnInvalidMove(inMove);
             return;
@@ -131,6 +131,11 @@ public class TicTacToeGameBoard : MonoBehaviour, IMoveHandler
             return;
 
         OnValidMove?.Invoke(inMove);
+    }
+
+    private bool IsValidMove(Move inMove)
+    {
+        return IsEmptyCell(inMove.MarkerX, inMove.MarkerY) && inMove.MarkerX >= 0 && inMove.MarkerX <= pBoardWidth && inMove.MarkerY >= 0 && inMove.MarkerY <= pBoardHeight;
     }
 
     private void UpdateGridBtnSymbol(Player pCurrentPlayer, int markerX, int markerY)

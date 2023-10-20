@@ -1221,8 +1221,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97d9571b0df1eff459c411b08864c32b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _UIGridButtonTemplate: {fileID: 1627152936}
-  _GridLayout: {fileID: 411687432}
+  m_UIGridButtonTemplate: {fileID: 1627152936}
+  m_GridLayout: {fileID: 411687432}
 --- !u!1 &608479928
 GameObject:
   m_ObjectHideFlags: 0
@@ -2267,7 +2267,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48161469f85a18c40a9604e7d0656640, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Players:
+  m_Players:
   - _Name: 
     _IsAI: 0
     _Symbol: X
