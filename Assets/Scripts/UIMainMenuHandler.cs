@@ -6,12 +6,13 @@ using TMPro;
 
 public class UIMainMenuHandler : UIHandler, IUIHandler
 {
-    public GameObject _TitleObj;
-    public TMP_Dropdown _SizeDropdown;
-    public List<Vector2Int> _BoardSizeOptions;
+    [SerializeField] private TMP_Dropdown _PlayerCountDropdown;
 
-    public TMP_InputField _InputField;
-    public Button _StartBtn;
+    [SerializeField] private TMP_Dropdown _SizeDropdown;
+    [SerializeField] private List<Vector2Int> _BoardSizeOptions;
+
+    [SerializeField] private List<TMP_InputField> _PlayerInputFields;
+    [SerializeField] private Button _StartBtn;
     
     private TicTacToeGameManager mGameManager;
 
@@ -27,6 +28,8 @@ public class UIMainMenuHandler : UIHandler, IUIHandler
         foreach (var option in _BoardSizeOptions)
             optionStrings.Add(option.x + "x" + option.y);
 
+        _PlayerCountDropdown.onValueChanged.AddListener(delegate { OnClickPlayerCount(_PlayerCountDropdown.value); });
+
         _SizeDropdown.ClearOptions();
         _SizeDropdown.AddOptions(optionStrings);
         _SizeDropdown.onValueChanged.AddListener(delegate { OnClickSizeButton(_SizeDropdown.value); });
@@ -39,18 +42,36 @@ public class UIMainMenuHandler : UIHandler, IUIHandler
     {
         if (!inSet)
         {
-            _InputField.onValueChanged.RemoveAllListeners();
+            foreach (TMP_InputField inputField in _PlayerInputFields)
+                inputField.onValueChanged.RemoveAllListeners();
+
             _StartBtn.onClick.RemoveAllListeners();
             return;
         }
 
-        _InputField.onValueChanged.AddListener(delegate { OnNameChanged(_InputField.text); });
+        foreach (TMP_InputField inputField in _PlayerInputFields)
+            inputField.onValueChanged.AddListener(delegate { OnNameChanged(inputField, inputField.text); });
+
         _StartBtn.onClick.AddListener(() => OnClickStartGame());
     }
 
-    private void OnNameChanged(string text)
+    private void OnNameChanged(TMP_InputField inInputfield, string text)
     {
-        mGameManager.GetPlayers()[0]._Name = text;
+        mGameManager.GetPlayers()[_PlayerInputFields.FindIndex(t => t == inInputfield)]._Name = text;
+        TrySetStartBtnActive();
+    }
+
+    private void OnClickPlayerCount(int value)
+    {
+        for (int i = 0; i < _PlayerInputFields.Count; i++)
+            _PlayerInputFields[i].transform.parent.gameObject.SetActive(false);
+
+        for (int i = 0; i <= value; i++)
+            _PlayerInputFields[i].transform.parent.gameObject.SetActive(true);
+
+        List<Player> players = mGameManager.GetPlayers();
+        players[1]._IsAI = value == 0;
+        players[1]._Name = value > 0 ? "" : "AI";
         TrySetStartBtnActive();
     }
 
@@ -61,7 +82,7 @@ public class UIMainMenuHandler : UIHandler, IUIHandler
 
     private void TrySetStartBtnActive()
     {
-        _StartBtn.interactable = !string.IsNullOrEmpty(_InputField.text);
+        _StartBtn.interactable = mGameManager.GetPlayers().Find(t => t._Name == "") == null;
     }
 
     private void OnClickStartGame()
